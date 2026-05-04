@@ -216,3 +216,21 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# =============================================================================
+# Project-specific ignores
+# =============================================================================
+
+# Raw data (users download manually; see data/README.md)
+data/raw/
+
+# Generated figures
+output/
+
+# macOS
+.DS_Store
+
+# Raw data files (large; not committed)
+data/raw/**/*.npy
+data/raw/**/*.csv
+data/raw/**/*.csv.gz

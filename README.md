@@ -4,14 +4,15 @@ Code companion for predicting future users' online activity using Bayesian nonpa
 
 ## Paper
 
-> Masoero, L., Camerlenghi, F., Favaro, S., and Broderick, T. (2026).
+> Beraha, M., Masoero, L., Favaro, S., and Richardson, T. S. (2025).
 > "Online activity prediction via generalized Indian buffet process models."
+> [arXiv:2505.19643](https://arxiv.org/abs/2505.19643).
 > *Annals of Applied Statistics* (under review).
 
 ## Installation
 
 ```bash
-git clone https://github.com/your-username/OnlineActivityPredictionIBP.git
+git clone https://github.com/lorenzomasoero/OnlineActivityPredictionIBP.git
 cd OnlineActivityPredictionIBP
 pip install -r requirements.txt
 ```

@@ -1,0 +1,112 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{amssymb}
+
+% ----------------------------
+% Colors
+% ----------------------------
+\definecolor{done}{RGB}{34,139,34}
+\definecolor{inprog}{RGB}{255,165,0}
+\definecolor{notstart}{RGB}{180,180,180}
+\definecolor{blocked}{RGB}{200,50,50}
+\definecolor{highpri}{RGB}{220,50,50}
+\definecolor{medpri}{RGB}{200,150,30}
+\definecolor{lowpri}{RGB}{50,150,50}
+\definecolor{themebg}{RGB}{235,240,250}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  urlcolor=blue!60!black,
+}
+
+% ----------------------------
+% Status and priority commands
+% ----------------------------
+\newcommand{\done}{\textcolor{done}{\checkmark~Done}}
+\newcommand{\inprog}{\textcolor{inprog}{$\circlearrowright$~In progress}}
+\newcommand{\notstart}{\textcolor{notstart}{$\square$~Not started}}
+\newcommand{\blocked}{\textcolor{blocked}{?~Blocked}}
+
+\newcommand{\high}{\textcolor{highpri}{\textbf{High}}}
+\newcommand{\med}{\textcolor{medpri}{\textbf{Med}}}
+\newcommand{\low}{\textcolor{lowpri}{\textbf{Low}}}
+
+% ----------------------------
+% Theme header
+% ----------------------------
+\newcommand{\theme}[2]{%
+  \subsection*{\colorbox{themebg}{\makebox[\dimexpr\linewidth-2\fboxsep][l]{\strut #1 --- #2}}}%
+}
+
+% ----------------------------
+% Document
+% ----------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE \textbf{Revision Tracker}} \\[0.5em]
+  {\large BNP-ABTests --- AOAS Submission} \\[0.3em]
+  {\normalsize ``Online activity prediction via generalized Indian buffet process models''} \\[0.3em]
+  {\small Editor: Po-Ling Loh \quad Decision: Major Revision} \\[0.8em]
+  {\small Last updated: \today}
+\end{center}
+
+\vspace{1em}
+
+% =========================================================
+\section*{Overview}
+% =========================================================
+
+\begin{center}
+\begin{tabular}{llcc}
+\toprule
+\textbf{Theme} & \textbf{Description} & \textbf{Open} & \textbf{Done} \\
+\midrule
+T1 & Framing \& Practical Impact & 3 & 1 \\
+T2 & Real Data Analysis & 4 & 0 \\
+T3 & Theoretical Exposition & 1 & 9 \\
+T4 & Section 3.4 \& Notation (R1) & 7 & 4 \\
+T5 & Simulations \& Presentation & 3 & 0 \\
+T6 & Typos \& Mechanical & 5 & 11 \\
+\midrule
+   & \textbf{Total} & \textbf{23} & \textbf{25} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{0.5em}
+
+\textbf{Key editorial constraints:}
+\begin{itemize}[nosep]
+  \item Target $\leq$20 pages (AOAS template, $\sim$500 words/page)
+  \item Dedicated Section~2 for motivating application and dataset
+  \item Minimize color in printed figures (use line styles)
+  \item Single point-by-point response file (Editor + AE + R1 + R2)
+\end{itemize}
+
+\vspace{1.5em}
+
+% =========================================================
+\input{themes/t1_framing}
+\input{themes/t2_realdata}
+\input{themes/t3_theory}
+\input{themes/t4_r1_notation}
+\input{themes/t5_simulations}
+\input{themes/t6_typos}
+
+\end{document}

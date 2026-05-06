@@ -1,0 +1,90 @@
+% =========================================================
+% Data Description — UCI Online Retail Dataset
+% For inclusion in the revised manuscript (Section 2 or 6)
+% =========================================================
+
+\subsection{UCI Online Retail Dataset}\label{sec:uci_data}
+
+To complement the ASOS dataset analyzed in the original submission,
+we consider the UCI Online Retail dataset \citep{chen2012data},
+a publicly available transactional record from a UK-based non-store
+online retailer covering December~2010 through December~2011.
+The raw data comprises 541{,}909 transaction line items across
+4{,}339 unique customers over 374~calendar days.
+
+\paragraph{Preprocessing.}
+We retain only transactions with a valid customer identifier and
+positive quantity, yielding 397{,}924 rows.
+For each customer~$n$ and calendar day~$d$, we define the
+\emph{trigger count} $A_{d,n}$ as the number of distinct transaction
+line items recorded for that customer on that day.
+This produces 16{,}766 customer--day pairs.
+
+\paragraph{User engagement characteristics.}
+The dataset exhibits the heavy-tailed engagement pattern
+that motivates our methodology:
+35.7\% of customers are active on exactly one day,
+67.4\% on three or fewer days,
+while 0.6\% are active on more than 30~days.
+The median total trigger count per customer is~41,
+but the distribution has a long right tail
+(maximum 7{,}847 triggers; standard deviation 228.8).
+These features are consistent with the power-law behavior
+discussed in Section~\ref{sec:setting}
+and documented broadly in online user activity data
+\citep{clauset2009power}.
+
+\paragraph{Experiment construction.}
+We partition the 374-day observation period into
+13~non-overlapping windows of $D = 28$~days each.
+Each window is treated as an independent ``experiment.''
+Within each window, the first $D_0 = 7$~days serve as the
+pilot period and the remaining $D_1 = 21$~days as the follow-up.
+Table~\ref{tab:uci_experiments} summarizes the resulting experiments.
+The windows span a range of traffic levels:
+from a low-activity period in early January
+(Experiment~1, $N_{D_0} = 34$)
+to the holiday season
+(Experiment~12, $N_{D_0} = 474$),
+providing a natural test of model robustness across
+varying data sparsity.
+
+\begin{table}[t]
+\centering
+\caption{Summary of the 13 experiment windows constructed from the
+UCI Online Retail dataset.
+$N_{D_0}$: users active in the 7-day pilot;
+$N_{\mathrm{total}}$: users active in the full 28-day window;
+$U_{D_0}^{(D_1)}$: new users in the 21-day follow-up;
+$T_{D_0}^{(D_1)}$: total triggers in the follow-up.}
+\label{tab:uci_experiments}
+\small
+\begin{tabular}{rrrrrr}
+\toprule
+Exp & Days & $N_{D_0}$ & $N_{\mathrm{total}}$ & $U_{D_0}^{(D_1)}$ & $T_{D_0}^{(D_1)}$ \\
+\midrule
+0  & 0--28   & 423 & 885   & 462   & 15{,}352 \\
+1  & 28--56  & 34  & 606   & 572   & 15{,}827 \\
+2  & 56--84  & 249 & 751   & 502   & 14{,}027 \\
+3  & 84--112 & 264 & 846   & 582   & 17{,}153 \\
+4  & 112--140 & 278 & 960  & 682   & 19{,}381 \\
+5  & 140--168 & 170 & 854  & 684   & 18{,}552 \\
+6  & 168--196 & 348 & 940  & 592   & 17{,}468 \\
+7  & 196--224 & 285 & 861  & 576   & 16{,}333 \\
+8  & 224--252 & 277 & 909  & 632   & 19{,}043 \\
+9  & 252--280 & 242 & 878  & 636   & 19{,}545 \\
+10 & 280--308 & 331 & 1{,}187 & 856 & 30{,}014 \\
+11 & 308--336 & 418 & 1{,}307 & 889 & 33{,}518 \\
+12 & 336--364 & 474 & 1{,}589 & 1{,}115 & 47{,}036 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Comparison with the ASOS dataset.}
+Unlike the ASOS data, which provides only the number of distinct
+users first triggering on each day, the UCI dataset provides
+per-customer daily trigger counts.
+This richer structure allows us to fit and evaluate the
+\nbmodel model in addition to the \bemodel and \tgmodel models,
+and to assess predictions of total future triggers
+$T_{D_0}^{(D_1)}$ on public data for the first time.

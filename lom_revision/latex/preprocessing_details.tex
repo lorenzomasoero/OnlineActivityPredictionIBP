@@ -1,0 +1,45 @@
+% =========================================================
+% Preprocessing Details — for Supplementary Material
+% =========================================================
+
+\subsection{UCI Online Retail: Preprocessing Details}\label{app:uci_preprocessing}
+
+The UCI Online Retail dataset \citep{chen2012data} records
+individual transaction line items from a UK-based online retailer
+between December~1, 2010 and December~9, 2011.
+Each row contains an invoice number, stock code, item description,
+quantity, invoice date and time, unit price, customer identifier,
+and country.
+
+\paragraph{Cleaning.}
+Of the 541{,}909 raw rows:
+\begin{itemize}
+    \item 135{,}080 rows (24.9\%) lack a customer identifier
+          (guest transactions) and are removed.
+    \item Cancellation invoices (invoice numbers prefixed with ``C'')
+          and rows with non-positive quantities are removed,
+          yielding 397{,}924 rows.
+\end{itemize}
+
+\paragraph{Aggregation.}
+We define the daily trigger count $A_{d,n}$ for customer~$n$
+on calendar day~$d$ as the number of distinct transaction line items
+recorded for that customer on that day.
+Aggregating produces 16{,}766 customer--day pairs
+across 4{,}339 unique customers and 305 distinct calendar days.
+
+\paragraph{Windowing.}
+The 374-day span is partitioned into 13 non-overlapping windows
+of 28~days each (the final 10 days are discarded).
+Within each window, customer identifiers are re-indexed
+and the trigger count matrix $A \in \mathbb{N}^{28 \times N}$
+is constructed, where $N$ is the number of customers active
+in that window.
+The first $D_0 = 7$ columns of each matrix constitute the
+pilot data; the remaining $D_1 = 21$ columns are the follow-up.
+
+\paragraph{Reproducibility.}
+The preprocessing script and all intermediate files are available
+in the supplementary code repository.
+The raw dataset is publicly available from the UCI Machine Learning
+Repository (ID~352) and requires no access credentials.

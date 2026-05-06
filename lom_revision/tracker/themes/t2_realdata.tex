@@ -1,0 +1,55 @@
+% =========================================================
+\theme{T2}{Real Data Analysis}
+% =========================================================
+
+\textbf{Core issue:} AE + R2 (major b, minor a, d, j).
+Data analysis is thin. Needs richer dataset description,
+visualizations, and decision-making evidence.
+
+\bigskip
+
+\begin{longtable}{p{1cm} p{1.5cm} p{1cm} p{7cm} p{2.5cm}}
+\toprule
+\textbf{Item} & \textbf{Src} & \textbf{Pri} & \textbf{Description} & \textbf{Status} \\
+\midrule
+\endhead
+
+T2.a & R2-j, Editor & \high &
+  \textbf{Fuller dataset description.}
+  REES46: cosmetics e-commerce, event types, 5 months, 1.6M users.
+  ASOS: what's available. Explain windowing into experiments.
+& \notstart \\
+\midrule
+
+T2.b & R2-a & \med &
+  \textbf{Visualize data characteristics.}
+  (i) Histogram of per-user trigger counts (log-log).
+  (ii) Cumulative new users over time (power-law curve).
+& \notstart \\
+\midrule
+
+T2.c & R2-d & \med &
+  \textbf{Power-law reference + visualization.}
+  Cite Clauset et al.\ (2009). Pair with T2.b figure.
+& \notstart \\
+\midrule
+
+T2.d & R2-c & \med &
+  \textbf{Polish ``isn't $M$ always known?'' response.}
+  Draft exists. Ensure Section~2 text reflects the argument.
+& \inprog \\
+\midrule
+
+T2.e & R2-j, AE & \high &
+  \textbf{Decision-making impact on real data.}
+  3--5 REES46 experiments: prediction trajectories,
+  $D_M$ intervals, comparison to competitors.
+  \emph{Done via hitting-time MAE experiment (Narrative A).
+  Results on REES46 (k=21,50,100), UCI, ASOS.
+  Decision figure: trajectory case study (ASOS arm ee6ff7\_C)
+  + planning error boxplots (ASOS + REES46).
+  Paper \S6.3 updated with table, figure, and power remark.}
+& \done \\
+
+\bottomrule
+\end{longtable}

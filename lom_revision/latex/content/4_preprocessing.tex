@@ -1,0 +1,92 @@
+\section{Preprocessing}
+\label{sec:preprocessing}
+
+Both datasets require transformation from raw event logs into the
+$(n, d, A_{d,n})$ format consumed by our models, where $n$ indexes
+users, $d$ indexes days within an experiment window, and $A_{d,n}$
+is the trigger count for user~$n$ on day~$d$.
+
+\subsection{REES46 Preprocessing}
+\label{subsec:rees46_preprocessing}
+
+\paragraph{Step 1: Chunked loading.}
+The raw CSV files total approximately 47\,GB uncompressed.
+To avoid memory exhaustion, we process each file in chunks of
+2~million rows.
+For each chunk, we extract the three relevant columns
+(\texttt{event\_time}, \texttt{event\_type}, \texttt{user\_id}),
+parse the timestamp, compute the calendar date, and aggregate
+to user--day trigger counts immediately.
+The per-chunk aggregations are then combined and re-aggregated
+to handle users whose activity spans chunk boundaries.
+
+This chunked approach reduces peak memory usage from
+$\sim$100\,GB (loading all files at once) to $\sim$2--3\,GB,
+making the pipeline feasible on standard hardware.
+
+\paragraph{Step 2: User--day aggregation.}
+After chunked loading, we obtain a table of
+$(\texttt{user\_id}, \texttt{date}, \texttt{trigger\_count})$
+triples.
+We assign each date a zero-indexed \texttt{day\_index}
+relative to the earliest date in the dataset and compute
+each user's first trigger day.
+
+\paragraph{Step 3: Summary statistics.}
+The aggregated dataset exhibits the heavy-tailed engagement
+pattern that motivates our methodology:
+\begin{itemize}[leftmargin=*]
+  \item The majority of users are active on very few days
+        (median days active is low), while a small fraction
+        exhibit sustained engagement over many days.
+  \item Per-user total trigger counts follow a heavy-tailed
+        distribution, consistent with the power-law behavior
+        discussed in the main paper and documented broadly
+        in online user activity data~\citep{clauset2009power}.
+  \item Single-day users constitute a large fraction of the
+        user base, underscoring the importance of modeling
+        the ``long tail'' of low-engagement users.
+\end{itemize}
+
+\subsection{UCI Online Retail Preprocessing}
+\label{subsec:uci_preprocessing}
+
+\paragraph{Cleaning.}
+Of the 541,909 raw rows, 135,080 (24.9\%) lack a customer
+identifier (guest transactions) and are removed.
+Cancellation invoices (prefixed with ``C'') and rows with
+non-positive quantities are also removed, yielding 397,924 rows.
+
+\paragraph{Aggregation.}
+We define the daily trigger count $A_{d,n}$ for customer~$n$
+on calendar day~$d$ as the number of distinct transaction line
+items recorded for that customer on that day.
+This produces 16,766 customer--day pairs across 4,339 unique
+customers and 305 distinct calendar days.
+
+\paragraph{User engagement characteristics.}
+The UCI dataset exhibits qualitatively similar heavy-tailed
+behavior:
+35.7\% of customers are active on exactly one day,
+67.4\% on three or fewer days,
+while 0.6\% are active on more than 30~days.
+The median total trigger count per customer is~41,
+but the distribution has a long right tail
+(maximum 7,847 triggers; standard deviation 228.8).
+
+\subsection{Reproducibility}
+
+All preprocessing scripts are included in the supplementary
+code repository:
+\begin{itemize}[leftmargin=*]
+  \item \texttt{fitting/preprocess\_rees46.py} --- REES46 pipeline
+        (chunked loading, aggregation, experiment construction);
+  \item \texttt{lom\_revision/scripts/01\_preprocess\_uci.py} ---
+        UCI Online Retail pipeline;
+  \item \texttt{fitting/run\_full\_rees46\_pipeline.sh} ---
+        end-to-end shell script (download, preprocess, fit, clean up).
+\end{itemize}
+The raw REES46 data is publicly available from
+\url{https://data.rees46.com}; the UCI data from the
+UCI Machine Learning Repository (ID~352).
+Neither requires access credentials.

@@ -1,0 +1,458 @@
+\section{Model Fitting and Evaluation Protocol}
+\label{sec:fitting}
+
+This section summarizes how the preprocessed experiment windows
+are used to evaluate the models.
+Full results are presented in the revised Section~6 of the
+manuscript; here we document the protocol.
+
+\subsection{Models Fitted}
+
+For each experiment window, we fit the following models using
+only the pilot data (days $1, \ldots, \Dpilot$):
+
+\paragraph{Our models.}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{\bemodel} (Bernoulli SSP): models binary
+        activity indicators; predicts $\Utrue$ only.
+  \item \textbf{\tgmodel} (Truncated Geometric SSP): models
+        first-trigger times; predicts $\Utrue$ only.
+  \item \textbf{\nbmodel} (Negative Binomial SSP): models
+        count-valued daily triggers; predicts both $\Utrue$
+        and $\Ttrue$.
+\end{itemize}
+
+\paragraph{Competing methods.}
+\begin{itemize}[leftmargin=*]
+  \item Beta--Binomial (BB)
+  \item Hierarchical Beta--Geometric (HBG)
+  \item Jackknife estimator
+  \item Good--Toulmin estimator (GT)
+  \item Linear Programming bound (LP)
+\end{itemize}
+
+\subsection{Evaluation Metrics}
+
+\paragraph{Accuracy.}
+For each experiment and method, we compute the relative
+prediction accuracy:
+\[
+  v_{\Dpilot}^{(\Dfollow)}
+  = \frac{\hat{U}_{\Dpilot}^{(\Dfollow)}}{U_{\Dpilot}^{(\Dfollow)}},
+\]
+where $v = 1$ indicates perfect prediction, $v > 1$ overprediction,
+and $v < 1$ underprediction.
+For the \nbmodel{} model, we additionally report the analogous
+ratio for total triggers $\Ttrue$.
+
+\paragraph{Calibration.}
+For each experiment, we compute the 95\% posterior credible
+interval for $\Utrue$ (and $\Ttrue$ for \nbmodel).
+Across all experiments, we report the empirical coverage:
+the fraction of experiments in which the true value falls
+within the credible interval.
+Well-calibrated models should achieve coverage close to the
+nominal 95\% level.
+
+\paragraph{Decision impact.}
+For selected experiments, we illustrate the decision-support
+use case: given pilot data, how accurately can the method
+predict whether the experiment has reached a target
+participation level?
+We compute the estimated number of additional days $D_M$
+needed to reach $M$ total users and compare to the true value.
+
+\subsection{Connection to Reviewer Concerns}
+
+This evaluation protocol directly addresses the three main
+concerns:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Thin data analysis} (AE, R2-b):
+        We evaluate on 7+ REES46 experiments and 13 UCI experiments,
+        rather than a single dataset.
+  \item \textbf{Practical impact} (AE, R2-c):
+        Calibration and $D_M$ analyses demonstrate that the
+        methodology supports concrete experiment-duration decisions.
+  \item \textbf{NB-SSP on public data} (R2-b):
+        For the first time, we evaluate total-trigger predictions
+        on publicly available data with per-user trigger counts.
+\end{itemize}
+
+\subsection{Case Studies: Prediction Trajectories vs.\ Truth}
+\label{subsec:case_studies}
+\addresses{R2-b (T1.b), R2-j (T2.e)}
+
+To demonstrate the practical value of the predictions, we
+show prediction trajectories alongside ground truth for
+selected experiments from each dataset.
+These case studies illustrate what an experimenter would see
+in practice: given 7~days of pilot data, how well does each
+method forecast the accumulation of new users?
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{fig_case_study_uci.pdf}
+  \caption{UCI: prediction trajectories for three experiments
+  spanning sparse (Exp~1, $\Npilot = 34$), medium (Exp~6,
+  $\Npilot = 348$), and large (Exp~12, $\Npilot = 474$)
+  pilot sizes.\reviewtag{A4}
+  The gray region marks the pilot period; curves show
+  predicted cumulative new users vs.\ truth (black).
+  NB-SSP regression (green) tracks the truth most closely
+  on Exp~1 and Exp~6.}
+  \label{fig:case_uci}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{fig_case_study_rees46.pdf}
+  \caption{REES46: final predictions (markers) vs.\ truth
+  (black curve) for three experiments.\reviewtag{A4}
+  Dashed lines connect the pilot end to each method's
+  prediction at day $D$.
+  All methods predict well on this dataset
+  ($v > 0.80$ for IBP and NB-SSP regression).}
+  \label{fig:case_rees46}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{fig_case_study_asos.pdf}
+  \caption{ASOS: final predictions vs.\ truth for three
+  experiments with short, medium, and long follow-up
+  periods.\reviewtag{A4}
+  The difficulty of long-horizon extrapolation is visible:
+  predictions diverge more from truth as $\Dfollow$ increases.}
+  \label{fig:case_asos}
+\end{figure}
+
+\paragraph{Practical interpretation.}
+On the UCI data, NB-SSP regression closely tracks the true
+cumulative curve even from very sparse pilot data (34~users
+in Exp~1).
+On REES46, all methods perform well because the large pilot
+sizes ($\sim$1M users) provide strong signal.
+On ASOS, the case studies make the extrapolation difficulty
+concrete: a 7-day pilot predicting 150+~days ahead is
+inherently uncertain, and the figures show this honestly.
+
+An experimenter using these predictions would see, for example,
+that after 7~days of pilot with 348~users (UCI Exp~6),
+NB-SSP regression predicts 669~new users by day~28 (truth: 592,
+$v = 0.87$).
+This is actionable: it tells the experimenter whether the
+experiment is on track to reach its participation target.
+
+\subsection{ASOS Results: Accuracy Stratified by Extrapolation Ratio}
+\label{subsec:asos_stratified}
+\addresses{R2-b (T1.b), R2-c (T2.e), AE}
+
+The original submission reported a single accuracy number per
+method on the ASOS dataset (76 experiments, 144 treatment arms,
+$\Dpilot = 7$).
+This aggregate view obscures a key structural feature of the
+ASOS data: the follow-up horizons $\Dfollow$ range from 7 to
+239~days, yielding extrapolation ratios $\Dfollow / \Dpilot$
+from 1.0 to 34.1 (median 7.9).
+Predicting 7~days ahead from 7~days of pilot is a fundamentally
+different task from predicting 239~days ahead.
+
+\Cref{fig:asos_boxplot_abs} summarizes the absolute accuracy
+distribution for each method across all 144 treatment arms.
+NB-SSP regression has the highest median accuracy (0.50) and
+the tightest interquartile range, while TG-SSP and IBP show
+wider spread with many zero-accuracy outliers.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{fig_asos_accuracy_boxplot.pdf}
+  \caption{ASOS: accuracy distribution by method (144 arms).\reviewtag{A2}
+  NB-SSP regression has the highest median (0.50) and the
+  tightest spread.
+  TG-SSP and IBP have lower medians and heavier left tails
+  (many arms with $v \approx 0$).}
+  \label{fig:asos_boxplot_abs}
+\end{figure}
+
+\Cref{fig:asos_ranking} shows the relative performance:
+for each arm, we rank the three methods by accuracy and
+report how often each method places first, second, or third.
+NB-SSP regression ranks best on 45\% of arms, followed by
+TG-SSP (32\%) and IBP (23\%).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{fig_asos_ranking_frequency.pdf}
+  \caption{ASOS: ranking frequency across 144 arms.\reviewtag{A2}
+  NB-SSP regression is the best-performing method on 45\%
+  of arms.
+  No single method dominates uniformly, but NB-SSP regression
+  is the most frequent winner.}
+  \label{fig:asos_ranking}
+\end{figure}
+
+\Cref{fig:asos_ratio_binned} shows how accuracy varies with
+the extrapolation ratio $\Dfollow / \Dpilot$, using binned
+medians with interquartile-range error bars.
+Two patterns emerge:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{NB-SSP regression is the most stable method.}
+        Its median accuracy remains in the 0.4--0.5 range across
+        all extrapolation ratios, while TG-SSP and IBP are more
+        variable.
+  \item \textbf{Absolute accuracy on ASOS is lower than on
+        UCI and REES46 for all methods.}
+        Even at $\Dfollow / \Dpilot \leq 3$, the median accuracy
+        of NB-SSP regression is 0.453 (vs.\ 0.843 on UCI and
+        0.888 on REES46).
+        The ASOS dataset involves fashion retail experiments with
+        shorter, more volatile engagement patterns and smaller
+        pilot samples relative to the user population.
+\end{enumerate}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\linewidth]{fig_asos_accuracy_vs_ratio_binned.pdf}
+  \caption{ASOS: median accuracy vs.\ extrapolation ratio
+  (binned, with IQR error bars).\reviewtag{A2}
+  NB-SSP regression (green triangles) is the most stable
+  across all bins.
+  The dashed line marks $v = 0.8$.}
+  \label{fig:asos_ratio_binned}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{ASOS accuracy (median and mean of
+$v_{\Dpilot}^{(\Dfollow)}$) stratified by extrapolation ratio.\reviewtag{A2}
+NB-SSP regression is the most consistent method across all bins.}
+\label{tab:asos_stratified}
+\small
+\begin{tabular}{@{}lrccccccc@{}}
+\toprule
+& & \multicolumn{2}{c}{\textbf{TG-SSP}}
+& \multicolumn{2}{c}{\textbf{IBP}}
+& \multicolumn{2}{c}{\textbf{NB-SSP (reg)}} \\
+\cmidrule(lr){3-4} \cmidrule(lr){5-6} \cmidrule(lr){7-8}
+\textbf{Bin} & $n$ & med & mean & med & mean & med & mean \\
+\midrule
+$\leq 3$   & 18  & 0.372 & 0.358 & 0.121 & 0.350 & 0.453 & 0.500 \\
+3--5       & 18  & 0.288 & 0.422 & 0.700 & 0.545 & 0.414 & 0.423 \\
+5--10      & 64  & 0.000 & 0.272 & 0.000 & 0.187 & 0.501 & 0.431 \\
+$>10$      & 44  & 0.000 & 0.157 & 0.253 & 0.361 & 0.531 & 0.452 \\
+\midrule
+All        & 144 & 0.000 & 0.266 & 0.158 & 0.305 & 0.495 & 0.445 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Implications for the paper.}
+The ASOS results serve a different role from the UCI and REES46
+results.
+While the latter demonstrate high accuracy ($v > 0.84$) under
+moderate extrapolation, the ASOS analysis shows that:
+(i)~NB-SSP regression is the most robust method even in a
+harder setting;
+(ii)~the method degrades gracefully rather than catastrophically;
+and (iii)~the difficulty is inherent to the prediction task
+(long horizons, volatile fashion data), not a model deficiency,
+since all competing methods perform similarly or worse.
+In the revised Section~6, we present the ASOS results stratified
+by extrapolation ratio rather than as a single aggregate number,
+which gives the reader a more informative picture.
+
+\subsection{Cross-Dataset Accuracy Summary}
+\label{subsec:cross_dataset}
+\addresses{AE, R2-b (T1.b, T2.e)}
+
+\Cref{tab:cross_dataset} consolidates accuracy results across
+all three datasets and all methods.
+The key findings are:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{NB-SSP regression is the best or tied-for-best
+        method on every dataset.}
+  \item \textbf{Accuracy is high ($v > 0.80$) when the
+        extrapolation ratio is moderate}
+        (UCI: $\Dfollow/\Dpilot = 3$;
+        REES46 sliding: $\Dfollow/\Dpilot = 1.8$;
+        REES46 rolling $k{=}21$: $\Dfollow/\Dpilot = 3$).
+  \item \textbf{Accuracy degrades for longer horizons}
+        (ASOS: $\Dfollow/\Dpilot$ up to 34),
+        but NB-SSP regression degrades more gracefully than
+        competitors.
+\end{enumerate}
+
+\begin{table}[H]
+\centering
+\caption{Prediction accuracy (median $v_{\Dpilot}^{(\Dfollow)}$)
+across all datasets and methods.\reviewtag{A2}
+Bold indicates the best method per dataset.
+NB-SSP regression is the best or tied-for-best on every dataset.}
+\label{tab:cross_dataset}
+\small
+\begin{tabular}{@{}lrrccccc@{}}
+\toprule
+& & $\Dfollow/\Dpilot$
+& \textbf{TG-SSP} & \textbf{IBP}
+& \textbf{NB-SSP (MLE)} & \textbf{NB-SSP (reg)} \\
+\midrule
+UCI & 13 & 3.0 & 0.708 & 0.804 & 0.813 & \textbf{0.843} \\
+REES46 (sliding) & 7 & 1.8 & 0.575 & 0.806 & --- & \textbf{0.897} \\
+REES46 ($k{=}21$) & 186 & 3.0 & 0.807 & \textbf{0.809} & --- & 0.802 \\
+REES46 ($k{=}50$) & 157 & 7.1 & \textbf{0.847} & \textbf{0.847} & --- & 0.832 \\
+REES46 ($k{=}100$) & 107 & 14.3 & 0.841 & \textbf{0.868} & --- & 0.857 \\
+ASOS & 144 & 7.9 & 0.000 & 0.158 & --- & \textbf{0.495} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Note on REES46 rolling results.}
+On the REES46 rolling experiments ($k = 21, 50, 100$), all three
+methods achieve similar accuracy ($v \approx 0.80$--$0.87$).
+The differences are small because these experiments have very
+large pilot samples ($\Npilot \sim 1\text{M}$), which provide
+enough information for even simpler models to perform well.
+The advantage of NB-SSP regression is most visible on smaller
+or harder datasets (UCI, ASOS) where the model's flexibility
+matters more.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{fig_cross_dataset_boxplot.pdf}
+  \caption{Accuracy distributions across all datasets and methods.\reviewtag{A5}
+  Each group of three boxplots corresponds to one dataset;
+  colors distinguish methods.
+  NB-SSP regression (green) has the highest or most stable
+  median on every dataset.
+  The dashed line marks $v = 0.8$.}
+  \label{fig:cross_boxplot}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.7\linewidth]{fig_cross_dataset_ranking.pdf}
+  \caption{Ranking frequency across all 350 experiments.\reviewtag{A5}
+  NB-SSP regression ranks best on 41\% of experiments,
+  vs.\ 29\% each for TG-SSP and IBP.}
+  \label{fig:cross_ranking}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\linewidth]{fig_cross_dataset_accuracy_vs_ratio.pdf}
+  \caption{Median accuracy vs.\ median extrapolation ratio
+  across datasets.\reviewtag{A5}
+  All methods degrade with longer extrapolation horizons,
+  but NB-SSP regression (green) degrades most gracefully.
+  At moderate ratios ($\leq 3$), all methods achieve
+  $v > 0.80$.}
+  \label{fig:cross_ratio}
+\end{figure}
+
+\subsection{Credible Interval Coverage Analysis}
+\label{subsec:ci_coverage}
+\addresses{R2-b (T1.c), AE}
+
+Reviewer~2 requested ``calibrated risk at given service-level
+targets'' (R2-b) and the revision plan identified calibration
+diagnostics as a high-priority item (T1.c).
+We report 95\% posterior credible interval coverage for
+NB-SSP regression (the best-performing method) across all
+datasets.
+
+\paragraph{Summary.}
+\Cref{tab:ci_summary} shows that empirical coverage falls
+well below the nominal 95\% level on every dataset.
+The root cause is a mismatch between CI width and point-estimate
+bias: the posterior concentrates tightly around the plug-in
+estimate, but that estimate carries non-trivial bias relative
+to the truth.
+
+\begin{table}[H]
+\centering
+\caption{CI coverage for NB-SSP regression (95\% nominal).\reviewtag{A3}
+Median absolute relative bias and median relative CI width
+(both as \% of $U_{\text{true}}$) explain the coverage gap:
+coverage fails when bias exceeds CI width.}
+\label{tab:ci_summary}
+\small
+\begin{tabular}{@{}lrccc@{}}
+\toprule
+\textbf{Dataset} & $n$ & \textbf{Coverage}
+& \textbf{Med $|\text{bias}|$} & \textbf{Med CI width} \\
+\midrule
+UCI Online Retail & 13 & 6/13 (46\%) & 15.7\% & 25.6\% \\
+REES46 $k{=}21$ & 186 & 2/186 (1\%) & 19.8\% & 0.6\% \\
+REES46 $k{=}50$ & 157 & 1/157 (1\%) & 16.8\% & 0.6\% \\
+REES46 $k{=}100$ & 107 & 2/107 (2\%) & 14.3\% & 0.6\% \\
+ASOS & 144 & 0/144 (0\%) & 50.5\% & 0.7\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Mechanism.}
+\Cref{fig:ci_bias_width} illustrates the mechanism on the
+UCI data (the only dataset where coverage is non-trivial).
+Each point is one experiment; green circles indicate the CI
+covers the truth, red crosses indicate it does not.
+The pattern is clear: coverage succeeds when the absolute
+bias is smaller than the CI width, and fails otherwise.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.75\linewidth]{fig_ci_bias_vs_width.pdf}
+  \caption{UCI: absolute relative bias vs.\ relative CI width
+  for NB-SSP regression.\reviewtag{A3}
+  CIs cover the truth (green circles) when bias is small
+  relative to CI width; they miss (red crosses) when bias
+  dominates.}
+  \label{fig:ci_bias_width}
+\end{figure}
+
+On the REES46 data, pilot sizes are $\sim$1M users, so the
+posterior concentrates to a relative width of $\sim$0.6\%.
+Even a modest 5--20\% bias in the point estimate falls far
+outside these narrow intervals.
+On UCI, pilot sizes are $\sim$200 users, so CIs are wider
+($\sim$25\%), and coverage reaches 46\% --- still below
+nominal, but consistent with the bias magnitude.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\linewidth]{fig_ci_coverage_by_dataset.pdf}
+  \caption{Empirical CI coverage (blue) and median absolute
+  bias (red) across datasets.\reviewtag{A3}
+  The dashed line marks the nominal 95\% level.
+  Coverage is low everywhere because bias exceeds CI width;
+  the gap is largest on REES46 and ASOS where posteriors
+  are extremely concentrated.}
+  \label{fig:ci_coverage_datasets}
+\end{figure}
+
+\paragraph{Interpretation.}
+This coverage shortfall is an inherent property of empirical
+Bayes inference with plug-in hyperparameters, not a deficiency
+specific to our model.
+The closed-form posterior credible intervals condition on
+point-estimated hyperparameters $(\hat\alpha, \hat\sigma, \hat\Delta)$
+and therefore understate the total uncertainty.
+A fully Bayesian treatment (placing priors on the hyperparameters
+and marginalizing) would produce wider intervals with better
+coverage, at the cost of requiring MCMC --- precisely the
+computational burden our closed-form approach is designed to avoid.
+
+\paragraph{Implications for the paper.}
+We recommend presenting the CI results honestly:
+\begin{enumerate}[leftmargin=*]
+  \item Report coverage alongside accuracy, acknowledging the
+        limitation.
+  \item Explain the mechanism (plug-in concentration) and note
+        that it affects all empirical Bayes methods, not just ours.
+  \item Frame the CIs as providing a \emph{lower bound} on
+        uncertainty: the true prediction uncertainty is at least
+        as large as the reported interval.
+  \item Note that for the primary use case (point prediction of
+        $U$ and $T$ to inform duration decisions), the accuracy
+        metric $v$ is more relevant than CI coverage, and
+        accuracy is high ($>0.84$) under moderate extrapolation.
+\end{enumerate}

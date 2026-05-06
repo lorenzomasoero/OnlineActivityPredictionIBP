@@ -1,0 +1,375 @@
+\appendix
+\section{Full Reviewer Reports}
+\label{app:reviews}
+
+We reproduce below the complete text of the editor's decision letter,
+the Associate Editor's report, and the two referee reports, exactly
+as received.
+These are included for reference so that the mapping between
+individual comments and revision actions
+(Table~\ref{tab:themes}, Table~\ref{tab:problem_theme_map})
+can be verified.
+
+
+% =========================================================
+\subsection{Editor Decision Letter (Po-Ling Loh)}
+\label{app:editor}
+% =========================================================
+
+\begin{quote}
+\small
+Dear Mario Beraha,
+
+Thank you for submitting your paper ``Online activity prediction via
+generalized Indian buffet process models'' for possible publication
+in Annals of Applied Statistics.
+It has now been carefully reviewed and my decision is:
+\textbf{Revision required.}
+
+Thank you for submitting your paper for possible publication in
+Annals of Applied Statistics. After careful reviews, our decision is:
+\textbf{Major revision required.}
+
+The paper has been reviewed by an Associate Editor and two referees.
+
+[\emph{AE report reproduced in Section~\ref{app:ae} below.}]
+
+Given these concerns, we cannot accept your manuscript for publication
+in its current form. Meanwhile, we are open to considering a
+thoroughly revised version that fully addresses all questions raised,
+with the understanding that there is no guarantee for the ultimate
+outcome of the new version at this moment.
+
+Should you choose to revise the manuscript, please keep the following
+in mind.
+\begin{itemize}[leftmargin=*]
+  \item It is strongly recommended to include a dedicated section,
+        typically Section~2, to introduce the motivating application
+        and dataset, and to clearly explain why it is important to
+        address the applied questions at hand. Then in the real-world
+        data analysis section, please provide sufficient details on
+        the applied findings and their implications for the field.
+  \item It is strongly recommended to use the template file provided
+        by the journal. Please note that most published papers will
+        not exceed 20~pages (about 500 words per page, with figures
+        typically taking 1/3~page and displayed equations 30~words
+        each), anything longer requiring unusually compelling subject
+        matter.
+  \item Printing figures in color adds significantly to the production
+        cost of the journal. While color may be used in the online
+        publication, we will use color in the printed version only
+        when essential to the display. Please use dashed/dotted lines
+        or symbols where possible and avoid referring to colors in the
+        text and the figure caption.
+  \item It is strongly recommended to submit the revision within
+        4~months of the decision date. A revision not submitted within
+        6~months will be automatically withdrawn.
+  \item Please prepare a detailed point-by-point response letter to
+        the Editor, the Associate Editor, and each individual referee,
+        all in a single file.
+\end{itemize}
+
+Sincerely,\\
+Po-Ling Loh\\
+Editor, The Annals of Applied Statistics
+\end{quote}
+
+
+% =========================================================
+\subsection{Associate Editor Report}
+\label{app:ae}
+% =========================================================
+
+\begin{quote}
+\small
+Both reviewers agree that this paper makes a nice methodological
+contribution, and that the motivation for the paper is compelling.
+However, this paper is not yet suitable for AoAS, given the applied
+and real world focus of the journal. The practical impact of the
+methodology is unclear, as the simulations do not clearly show this
+method is better, and the data analysis is not very thorough and it
+is unclear what the significance of this dataset is. Perhaps the
+authors should focus more on the data analysis and the downstream
+impact of the methods they propose.
+
+This methodology is highly related to Camerlenghi et al (2022). This
+manuscript should more clearly articulate its original contributions
+and how they extend beyond existing work.
+
+There are also multiple typos and confusing points as noted by the
+reviewers, that should be corrected.
+\end{quote}
+
+
+% =========================================================
+\subsection{Reviewer~1 Report}
+\label{app:r1}
+% =========================================================
+
+\begin{quote}
+\small
+\textbf{General comment.}
+The authors introduce a novel Bayesian nonparametric framework for
+the prediction of count data. The paper is motivated by a clear and
+relevant application: predicting new users, total triggers, and the
+sufficient length of the follow-up period in the design of A/B tests
+(i.e., an online marketing methodology aimed at comparing the
+performance of two versions of a product or service). Building upon
+the literature on the Indian buffet process and its generalizations,
+the authors' approach yields closed-form posterior and predictive
+quantities that are both theoretically appealing and computationally
+efficient. In particular, parameter estimation and prediction under
+the proposed models do not require computationally expensive Markov
+chain Monte Carlo methods, as is often the case in Bayesian
+nonparametric models. This results in a theoretically elegant and
+practically flexible framework that can be applied to large datasets
+thanks to its computational efficiency. I thoroughly enjoyed reading
+this paper. It is well written and carefully organized, with strong
+applied motivation, solid methodological development, and convincing
+validation through extensive simulations and real-world experiments.
+However, I believe that some adjustments are needed to make the paper
+fully ready for publication; those are detailed below.
+
+\medskip
+\textbf{Point 1.}
+While the paper is overall well written, I found Section~3.4 the most
+difficult to read and somewhat confusing. Most of the confusion likely
+stems from the fact that $D_M$, defined here as the number of
+follow-up days needed to see $M$ new users, is set equal to
+$F'_{M - N_{D_0}}$, i.e., the day when the $(M - N_{D_0})$-th new
+user triggered, which does not seem to align with the earlier
+definition. Is the term ``new users'' used interchangeably with
+``unobserved users'' in this section? Do both terms refer to users
+not observed (i.e., not triggered) during the pilot study of length
+$D_0$?
+
+Moreover, while the measure $F'$ is clearly related to the measure
+$Z^{FT}$ in Eq.~(4), the presence of Theorem~3.8 in this section
+suggests that the reader would benefit from further clarification
+here either on the distributional assumptions for $F'$ or through an
+explicit reference describing its relationship with $Z^{FT}$.
+Without such clarification, the statement of Theorem~3.8 appears
+somewhat vague.
+
+\medskip
+\textbf{Point 2.}
+p.3, Eq.~(1): the second sum should run from $D_0 + 1$ to
+$D_0 + D_1$, right?
+
+\medskip
+\textbf{Point 3.}
+p.4, ll.8--10: the sentence starting from ``this assumption
+clearly\ldots'' sounds too strong, or at least imprecise. At this
+point in the paper, no distributional assumption on the observations
+$A_{d,n}$ has been specified. Why is it obvious that all users out of
+the fixed total number $M$ will eventually trigger as $D_1 \to \infty$?
+
+\medskip
+\textbf{Point 4.}
+In Definition~3.1, the statement
+$A_{d,n} \mid \mu \stackrel{\mathrm{iid}}{\sim} G(\cdot \mid \theta_n)$
+would likely be clearer if written as
+$A_{d,n} \mid \mu \stackrel{\mathrm{ind}}{\sim} G(\cdot \mid \theta_n)$,
+since the distribution on the right-hand side depends on $n$.
+
+\medskip
+\textbf{Point 5.}
+On p.5, Eq.~(5), there appears to be an $s$ in place of a $\theta$.
+Moreover, the subsequent phrasing ``which puts to zero all values
+greater than $D$'' sounds too informal; consider rephrasing it more
+formally, for example, as ``which assigns zero probability to all
+values exceeding $D$.''
+
+\medskip
+\textbf{Point 6.}
+On p.5/6, I suggest mentioning that $P_0$ is a non-atomic
+distribution, either in the last paragraph of p.5 or within
+Definition~3.2.
+
+\medskip
+\textbf{Point 7.}
+At the end of Definition~3.2, is $\tilde\mu$ supposed to be just $\mu$?
+
+\medskip
+\textbf{Point 8.}
+In Theorem~3.4, was $\pi_{\mathcal{G}}$ previously defined?
+
+\medskip
+\textbf{Point 9.}
+When specific theorems and the algorithm are referred to within the
+text, the words ``theorem'' and ``algorithm'' are sometimes
+capitalized and sometimes not.
+
+\medskip
+\textbf{Point 10.}
+In Proposition~3.6, the sum defining $U_{D_0}^{(D_1)}$ should start
+from $D_0 + 1$.
+
+\medskip
+\textbf{Point 11.}
+p.9: there is a typo and the word ``users'' is written as ``usres.''
+\end{quote}
+
+
+% =========================================================
+\subsection{Reviewer~2 Report}
+\label{app:r2}
+% =========================================================
+
+\begin{quote}
+\small
+The paper proposes an applied-methods framework to forecast user
+engagement in online A/B tests: (i)~number of new/distinct users,
+(ii)~total triggers including repeats, and (iii)~days to reach target
+$M$ users. It builds on stable-beta scaled process priors to model
+heavy-tailed user propensities and obtains closed-form
+posterior/predictive distributions that make the approach fast for
+large platforms.
+
+\medskip
+\textbf{Major concern (a).}
+Although the context and the theoretical results are tailored to the
+specific application in A/B testing, the backbone of the proposed
+framework is essentially the same as in Camerlenghi et al (2022),
+that is, the scaled-process priors, in particular the stable-Beta
+scaled process (SB-SP), used to overcome the rigidity of standard CRM
+priors for ``unseen features.'' It's clear that the overlap is mostly
+at the level of the prior construction and its posterior-predictive
+flexibility; the differences lie in inferential targets
+(unseen-feature estimation vs.\ multi-horizon forecasting and stopping
+rules) and the emphasis on deployable procedures and calibration for
+A/B experimentation workflows. This is my conclusion after reading
+both manuscripts; however, this manuscript should more clearly
+articulate its original contributions and how they extend beyond
+existing work.
+
+\medskip
+\textbf{Major concern (b).}
+The manuscript is interesting, extensive, and technically careful, but
+my major concern is that its center of gravity is on probabilistic
+development: multiple likelihood types, several inferential targets,
+and a rich catalogue of distributional results. Therefore, it reads
+more like a methodological contribution adapted to an applied venue
+than a paper conceived with a truly applied motivation. The data
+analysis feels thin: a couple of datasets only superficially
+investigated, sparse diagnostics, and little evidence that the method
+has a practical impact and changes decisions in A/B testing (e.g.,
+earlier stopping, fewer underpowered launches, calibrated risk at
+given service-level targets).
+
+\medskip
+\textbf{Major concern (c).}
+The paper's general objective is unclear. The introduction oscillates
+between (i)~improving causal effect estimation and (ii)~improving
+experimental sampling/design, but it never nails down a single primary
+goal, the estimand, or the decision the method is meant to support.
+If the contribution is design, the paper must say what decision is
+being optimized and under which constraints, e.g., ``choose $D_0$
+(pilot length) and/or $n_0$ (pilot size) to minimize expected total
+time/cost to a pre-specified precision on the ATE.'' If the true goal
+is causal estimation rather than design, the authors should define the
+estimand and demonstrate precision/coverage gains relative to standard
+estimators, treating design results as ancillary. Moreover, the data
+analysis should demonstrate the method's impact and its practical
+advantage over competing methods in the context of A/B testing.
+
+\medskip
+\textbf{Major concern (d).}
+Theoretical results are shown without comments about their
+consequences for the application. For example, after Corollary~3.5,
+it is mentioned that the predictive distribution of quantities that
+can be expressed as functionals of $\mu'$ will be the same under the
+Be-SSP and TG-SSP models. However, the practical consequences are not
+discussed. In Proposition~3.7, the Bayesian estimator for
+$T_{D_0}^{(D_1)}$ has a potentially interesting mixture form, e.g.,
+in terms of rate ratios, but this is not commented upon.
+
+\medskip
+\textbf{Minor points and editorial issues.}
+
+\medskip
+\textbf{(a)} p.3: ``One of the main challenges\ldots crucial for
+accurately predicting user engagement.'' The motivation for the paper
+would be clearer if those features were visualized in the data.
+
+\textbf{(b)} p.3: ``We can broadly categorize\ldots linear
+programming approach.'' It is not clear what the difference is between
+the proposed method and the approaches mentioned here, and why these
+approaches are limited.
+
+\textbf{(c)} p.4: ``Ionita-Laza et al.\ (2009); Richardson et al.\
+(2022) assume that the total number of users, say $M$, is fixed and
+known.'' Isn't it always the case, though, that the number of users
+is known, in A/B testing? Isn't there a cost to add days and subjects?
+
+\textbf{(d)} p.4: ``user activity often exhibits a power law growth.''
+Please, add a reference or a visualization.
+
+\textbf{(e)} p.4: ``Moreover, in some situations, focusing only on
+the first trigger times $F_n$ might be preferable as we demonstrate
+in our experiments.'' It looks like $F_n$ can be derived from coarse
+data, so this point is not clear.
+
+\textbf{(f)} The relevance of Definition~3.1 is clearly not related
+to the application. Moreover, it introduces concepts that may not be
+familiar to the reader, like the score distribution, which has not
+been previously defined.
+
+\textbf{(g)} p.5: ``Parametrizing the success probability of the
+negative binomial distribution\ldots infinitesimally small values.''
+This sentence needs clarification.
+
+\textbf{(h)} p.5: ``the choice of the prior distribution for $\mu$
+is crucial for capturing the complex dynamics and heterogeneity of
+user behavior.'' This sentence needs clarification.
+
+\textbf{(i)} Section~5.2 includes some comparisons with other
+methods. However, Figure~6 shows that across values of $\tau$, the
+proposed Be-SSP has predictive performance comparable to that of the
+Indian buffet process (IBP). Because the scaled-stable-beta-Bernoulli
+process (SSP) is not plotted, the claimed comparability to SSP cannot
+be evaluated. As a result, the empirical advantage of the proposed
+method is not clear in this setting.
+
+\textbf{(j)} The real-data analysis would benefit from a fuller
+description of the dataset. Even if the data are proprietary, the
+paper should provide high-level information about the types of
+experiments conducted, the goals of the analysis, and why the proposed
+model is suitable for those aims. It is also unclear how the results
+would inform company decision-making, particularly relative to
+alternative modeling proposals.
+
+\textbf{(k)} If it were for me, I would move most of the Simulations
+in the Supplementary Material, and focus the manuscript on the impact
+on the real data analysis.
+
+\textbf{(l)} The authors correctly ``highlight how the choice of the
+prior distribution for $\mu$ plays a crucial role for the quality of
+the posterior and predictive distributions of interest.'' I would also
+add the choice of the score distribution. However, the manuscript does
+not thoroughly discuss how to assess model fit and select the optimal
+score distribution for a given problem.
+
+\medskip
+\textbf{Typos and inaccuracies.}
+The paper contains numerous typos and inaccuracies. Some
+cross-references to equations and citations are unresolved (??). The
+paper needs an accurate reading. I am listing several instances here;
+however, the issues are present throughout the article.
+\begin{itemize}[leftmargin=*]
+  \item p.3: If $F_n = \min_d \mathbb{I}[A_{d,n} > 0]$ then the set
+        of tuples does not need to include $F_n$. The data are simply
+        represented by $A_{1:D,n}$.
+  \item p.5, Section~3.2: ``$\Delta^{-\alpha} \sim \mathcal{E}(1)$'';
+        $\mathcal{E}(1)$ is not defined.
+  \item p.7, Corollary~3.5: What is
+        $\tilde\Delta_{1,h}^{-\alpha}$ in (9)? It is not defined in
+        the Corollary.
+  \item p.11: ``our strategy is more scalable as it does require
+        performing Markov chain Monte Carlo simulations'' $\to$
+        ``does \emph{not} require.''
+  \item p.16: ``Moreover, the length of the intervals increases with
+        parameter tau of the data generating process'' $\to$ the
+        parameter $\tau$.
+\end{itemize}
+\end{quote}

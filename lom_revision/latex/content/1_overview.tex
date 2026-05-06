@@ -1,0 +1,303 @@
+\section{Overview}
+\label{sec:overview}
+
+This document supports the major revision of
+\emph{``Online activity prediction via generalized Indian buffet
+process models,''} submitted to the Annals of Applied Statistics
+(AOAS), following reports from Editor Po-Ling Loh, an Associate
+Editor (AE), Reviewer~1 (R1), and Reviewer~2 (R2).
+
+It serves two purposes:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Technical reference.}
+        A self-contained record of the data pipeline, experiment
+        construction, and evaluation protocol for the new real-data
+        analyses added in the revision.
+  \item \textbf{Rebuttal scaffold.}
+        The problem--solution structure (Section~\ref{subsec:problems})
+        provides the narrative arc of the response letter, while the
+        per-reviewer item tracker (Section~\ref{subsec:themes})
+        provides the skeleton for the point-by-point response.
+\end{enumerate}
+
+
+% =========================================================
+\subsection{Reviewer Reports}
+\label{subsec:reviewer_reports}
+% =========================================================
+
+We summarize the reports below; the full verbatim text is
+reproduced in Appendix~\ref{app:reviews}.
+
+\paragraph{Editor and AE.}
+The AE recommends: \emph{``focus more on the data analysis and the
+downstream impact.''}
+The editor requests a dedicated Section~2 for the motivating
+application and dataset, a $\leq$20-page manuscript, minimal color
+in figures, and a single point-by-point response file.
+
+\paragraph{Reviewer~1.}
+Positive overall (\emph{``I thoroughly enjoyed reading this paper''}).
+Eleven specific points, mostly notation and clarity.
+The most substantive (R1-1) requests a rewrite of Section~3.4
+to clarify $D_M$, ``new'' vs.\ ``unobserved'' users, and the
+relationship between $F'$ and $Z^{\mathrm{FT}}$.
+
+\paragraph{Reviewer~2.}
+The critical reviewer. Four major concerns:
+(a)~novelty vs.\ Camerlenghi et al.\ (2022);
+(b)~paper reads as methodology, data analysis is thin,
+\emph{``little evidence the method has practical impact''};
+(c)~primary goal unclear (causal estimation vs.\ experimental design);
+(d)~theoretical results lack practical interpretation.
+Plus 12 minor points and several typos.
+
+
+% =========================================================
+\subsection{Problems and Solutions}
+\label{subsec:problems}
+% =========================================================
+
+We distill the reports into five problems.
+Each problem statement can be adapted directly into the
+rebuttal letter; each solution summarizes the revision action
+and points to the section of this document (and the revised
+manuscript) where it is carried out.
+
+\paragraph{Problem 1: The data analysis is thin.}
+\begin{itemize}[leftmargin=*]
+  \item[\emph{Source:}] AE; R2 major~(b); R2 minor~(j).
+  \item[\emph{Problem:}]
+        The original submission relied on a proprietary dataset
+        (1,774 A/B test arms, not shareable) and the ASOS dataset
+        (76 treatment arms, first-trigger counts only).
+        Neither was described in sufficient detail, and the analyses
+        were limited to accuracy comparisons without diagnostics.
+  \item[\emph{Solution:}]
+        We introduce two new public datasets---REES46 (380M events,
+        7~months, per-user timestamps) and UCI Online Retail
+        (541K transactions, 374~days).
+        These provide the fine-grained structure needed to evaluate
+        all three model variants and yield 20+ experiment windows
+        for systematic evaluation.
+  \item[\emph{Where:}]
+        Data sources: Section~\ref{sec:data_sources}.
+        Preprocessing: Section~\ref{sec:preprocessing}.
+        Manuscript: revised Section~2 and Section~6.
+\end{itemize}
+
+\paragraph{Problem 2: The practical impact is unclear.}
+\begin{itemize}[leftmargin=*]
+  \item[\emph{Source:}] AE; R2 major~(b), (c).
+  \item[\emph{Problem:}]
+        The reviewers found \emph{``little evidence the method has
+        practical impact and changes decisions.''}
+        The paper did not demonstrate how predictions translate into
+        actionable experiment-duration decisions.
+  \item[\emph{Solution:}]
+        We commit to the framing: the method supports
+        \emph{experiment-duration planning}.
+        We demonstrate impact through:
+        (i)~calibration diagnostics (95\% CI coverage across all
+        experiment windows);
+        (ii)~case studies showing early-stopping decisions on 3
+        representative experiments;
+        (iii)~$D_M$ interval computations answering ``how many more
+        days to reach $M$ users?''
+  \item[\emph{Where:}]
+        Evaluation protocol: Section~\ref{sec:fitting}.
+        Manuscript: revised Section~6 and new Section~2 framing.
+\end{itemize}
+
+\paragraph{Problem 3: No evidence for the power-law claim.}
+\begin{itemize}[leftmargin=*]
+  \item[\emph{Source:}] R2 minor~(d).
+  \item[\emph{Problem:}]
+        The paper asserted that user activity exhibits power-law
+        growth without providing a reference or visualization.
+  \item[\emph{Solution:}]
+        Log-log histograms of per-user trigger counts and cumulative
+        new-user curves for both datasets, paired with a citation
+        to~\citet{clauset2009power}.
+  \item[\emph{Where:}]
+        Section~\ref{sec:preprocessing}.
+        Manuscript: new Figure~1 in Section~2.
+\end{itemize}
+
+\paragraph{Problem 4: The paper's primary goal is unclear.}
+\begin{itemize}[leftmargin=*]
+  \item[\emph{Source:}] R2 major~(c); AE.
+  \item[\emph{Problem:}]
+        The introduction oscillated between improving causal effect
+        estimation and improving experimental design.
+  \item[\emph{Solution:}]
+        Single framing: the goal is \emph{prediction of user
+        engagement to inform experiment duration decisions}.
+        Estimands: $\Utrue$, $\Ttrue$, $D_M$.
+        This is a design/planning contribution, not causal estimation.
+  \item[\emph{Where:}]
+        Manuscript: rewritten introduction and new Section~2.
+\end{itemize}
+
+\paragraph{Problem 5: NB-SSP never evaluated on public data.}
+\begin{itemize}[leftmargin=*]
+  \item[\emph{Source:}] R2 major~(b).
+  \item[\emph{Problem:}]
+        The \nbmodel{} model's total-trigger predictions ($\Ttrue$)
+        were only evaluated on proprietary data.
+        The ASOS dataset provides only first-trigger counts.
+  \item[\emph{Solution:}]
+        Both REES46 and UCI provide per-user daily trigger counts,
+        enabling the first public-data evaluation of \nbmodel{}'s
+        total-trigger predictions.
+  \item[\emph{Where:}]
+        Section~\ref{sec:fitting}.
+        Manuscript: new results in Section~6.
+\end{itemize}
+
+
+% =========================================================
+\subsection{Per-Reviewer Item Tracker}
+\label{subsec:themes}
+% =========================================================
+
+For the point-by-point rebuttal, we track every individual
+reviewer item organized by theme.
+Table~\ref{tab:themes} gives the summary; the full item-level
+detail is in the companion files
+\texttt{t1\_framing.tex} through \texttt{t6\_typos.tex}.
+
+\begin{table}[H]
+\centering
+\caption{Revision themes and status.
+Themes T1--T2 are addressed by the data pipeline documented
+in this appendix (Sections~\ref{sec:data_sources}--\ref{sec:fitting}).
+Themes T3--T6 are addressed in the revised manuscript text.}
+\label{tab:themes}
+\small
+\begin{tabular}{@{}clp{3.2cm}cc@{}}
+\toprule
+\textbf{ID} & \textbf{Theme} & \textbf{Primary source} &
+\textbf{Open} & \textbf{Done} \\
+\midrule
+T1 & Framing \& Impact & AE, R2-b,c, Editor & 4 & 0 \\
+T2 & Real Data Analysis & AE, R2-b,j, Editor & 4 & 0 \\
+T3 & Theory & R2-a,d,f--h,l & 1 & 9 \\
+T4 & Sec.~3.4 \& Notation & R1-1 through R1-11 & 11 & 0 \\
+T5 & Simulations & R2-k, Editor & 3 & 0 \\
+T6 & Typos & R1, R2, proofread & 16 & 0 \\
+\midrule
+   & \textbf{Total} & & \textbf{39} & \textbf{9} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:problem_theme_map} cross-references the five
+problems with the theme items they resolve, so that each
+problem--solution pair in the rebuttal can cite the specific
+items it addresses.
+
+\begin{table}[H]
+\centering
+\caption{Cross-reference: problems $\leftrightarrow$ theme items.}
+\label{tab:problem_theme_map}
+\small
+\begin{tabular}{@{}clll@{}}
+\toprule
+\textbf{Problem} & \textbf{Short title} &
+\textbf{Theme items} & \textbf{Appendix section} \\
+\midrule
+1 & Thin data analysis &
+  T1.d, T2.a, T2.b, T2.c &
+  Secs.~\ref{sec:data_sources}--\ref{sec:preprocessing} \\
+2 & Practical impact &
+  T1.a, T1.b, T1.c, T2.e &
+  Sec.~\ref{sec:fitting} \\
+3 & Power-law evidence &
+  T2.b, T2.c &
+  Sec.~\ref{sec:preprocessing} \\
+4 & Unclear primary goal &
+  T1.a &
+  Manuscript intro + Sec.~2 \\
+5 & NB-SSP on public data &
+  T2.a, T2.e &
+  Sec.~\ref{sec:fitting} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+% =========================================================
+\subsection{Evaluation Strategy}
+\label{subsec:eval_strategy}
+% =========================================================
+
+The solutions above require four concrete evaluation exercises.
+Table~\ref{tab:eval_exercises} lists them; each will be cited
+in the rebuttal when responding to the corresponding reviewer
+item.
+
+\begin{table}[H]
+\centering
+\caption{Evaluation exercises.
+Each exercise produces results cited in the rebuttal and
+incorporated into the revised Section~6.}
+\label{tab:eval_exercises}
+\small
+\begin{tabular}{@{}clp{4cm}l@{}}
+\toprule
+\textbf{ID} & \textbf{Use case} &
+\textbf{What we compute} & \textbf{Problem} \\
+\midrule
+E1 & Accuracy &
+  $\hat{U}$ + 95\% CI for all windows;
+  accuracy ratio $v$ &
+  P1, P2 \\
+E2 & Stopping decisions &
+  $D_M$ intervals for 3 experiments &
+  P2 \\
+E3 & Trigger forecasting &
+  $\hat{T}$ via \nbmodel{} &
+  P5 \\
+E4 & Competitor comparison &
+  E1/E3 for BB, HBG, Jackknife, GT, LP &
+  P1, P2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Two layers of evidence.}
+Results are presented at two levels:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Aggregate:} accuracy boxplots, CI coverage tables,
+        and trigger-prediction accuracy across all experiment windows.
+  \item \textbf{Case studies:} prediction trajectories, $D_M$
+        intervals, and a decision narrative for 3 representative
+        experiments (sparse, medium, high traffic).
+\end{enumerate}
+
+
+% =========================================================
+\subsection{Document Roadmap}
+\label{subsec:roadmap}
+% =========================================================
+
+The remainder of this appendix follows the data pipeline
+from raw files to model evaluation:
+\begin{description}[leftmargin=!,labelwidth=2.8cm]
+  \item[Section~\ref{sec:data_sources}]
+    Data sources: REES46 and UCI Online Retail
+    (addresses P1, P5).
+  \item[Section~\ref{sec:preprocessing}]
+    Preprocessing: chunked loading, aggregation,
+    user-engagement characterization
+    (addresses P1, P3).
+  \item[Section~\ref{sec:experiment_construction}]
+    Experiment construction: windowing strategies,
+    ground-truth definitions.
+  \item[Section~\ref{sec:fitting}]
+    Model fitting and evaluation protocol: exercises
+    E1--E4 (addresses P2, P5).
+  \item[Appendix~\ref{app:reviews}]
+    Full verbatim reviewer reports.
+\end{description}

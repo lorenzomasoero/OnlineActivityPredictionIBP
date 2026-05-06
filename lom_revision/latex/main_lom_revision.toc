@@ -1,0 +1,78 @@
+\contentsline {section}{\numberline {1}Overview}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Reviewer Reports}{3}{subsection.1.1}%
+\contentsline {paragraph}{Editor and AE.}{3}{section*.2}%
+\contentsline {paragraph}{Reviewer\nobreakspace {}1.}{3}{section*.3}%
+\contentsline {paragraph}{Reviewer\nobreakspace {}2.}{3}{section*.4}%
+\contentsline {subsection}{\numberline {1.2}Problems and Solutions}{3}{subsection.1.2}%
+\contentsline {paragraph}{Problem 1: The data analysis is thin.}{4}{section*.5}%
+\contentsline {paragraph}{Problem 2: The practical impact is unclear.}{4}{section*.6}%
+\contentsline {paragraph}{Problem 3: No evidence for the power-law claim.}{4}{section*.7}%
+\contentsline {paragraph}{Problem 4: The paper's primary goal is unclear.}{5}{section*.8}%
+\contentsline {paragraph}{Problem 5: NB-SSP never evaluated on public data.}{5}{section*.9}%
+\contentsline {subsection}{\numberline {1.3}Per-Reviewer Item Tracker}{5}{subsection.1.3}%
+\contentsline {subsection}{\numberline {1.4}Evaluation Strategy}{6}{subsection.1.4}%
+\contentsline {paragraph}{Two layers of evidence.}{6}{section*.13}%
+\contentsline {subsection}{\numberline {1.5}Document Roadmap}{6}{subsection.1.5}%
+\contentsline {section}{\numberline {2}Data Sources}{7}{section.2}%
+\contentsline {subsection}{\numberline {2.1}REES46 eCommerce Behavior Dataset}{7}{subsection.2.1}%
+\contentsline {paragraph}{Scope.}{7}{section*.14}%
+\contentsline {paragraph}{Event types.}{7}{section*.15}%
+\contentsline {paragraph}{Files.}{7}{section*.16}%
+\contentsline {paragraph}{Why this dataset.}{8}{section*.18}%
+\contentsline {subsection}{\numberline {2.2}REES46 Data Characteristics}{8}{subsection.2.2}%
+\contentsline {paragraph}{Key statistics.}{12}{section*.23}%
+\contentsline {subsection}{\numberline {2.3}UCI Online Retail Dataset}{14}{subsection.2.3}%
+\contentsline {paragraph}{Key statistics.}{14}{section*.26}%
+\contentsline {subsection}{\numberline {2.4}ASOS Dataset}{14}{subsection.2.4}%
+\contentsline {paragraph}{Key statistics.}{14}{section*.27}%
+\contentsline {paragraph}{Why this dataset is harder.}{15}{section*.30}%
+\contentsline {subsection}{\numberline {2.5}Comparison of Data Sources}{16}{subsection.2.5}%
+\contentsline {section}{\numberline {3}Preprocessing}{16}{section.3}%
+\contentsline {subsection}{\numberline {3.1}REES46 Preprocessing}{16}{subsection.3.1}%
+\contentsline {paragraph}{Step 1: Chunked loading.}{16}{section*.32}%
+\contentsline {paragraph}{Step 2: User--day aggregation.}{16}{section*.33}%
+\contentsline {paragraph}{Step 3: Summary statistics.}{16}{section*.34}%
+\contentsline {subsection}{\numberline {3.2}UCI Online Retail Preprocessing}{17}{subsection.3.2}%
+\contentsline {paragraph}{Cleaning.}{17}{section*.35}%
+\contentsline {paragraph}{Aggregation.}{17}{section*.36}%
+\contentsline {paragraph}{User engagement characteristics.}{17}{section*.37}%
+\contentsline {subsection}{\numberline {3.3}Reproducibility}{17}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Experiment Construction}{18}{section.4}%
+\contentsline {subsection}{\numberline {4.1}From Observational Data to Simulated Experiments}{18}{subsection.4.1}%
+\contentsline {paragraph}{Rationale.}{18}{section*.38}%
+\contentsline {paragraph}{Key assumption.}{18}{section*.39}%
+\contentsline {paragraph}{Connection to A/B testing.}{18}{section*.40}%
+\contentsline {subsection}{\numberline {4.2}Windowing Strategy}{18}{subsection.4.2}%
+\contentsline {paragraph}{Non-overlapping windows.}{18}{section*.41}%
+\contentsline {paragraph}{Sliding windows.}{19}{section*.42}%
+\contentsline {paragraph}{Rolling windows with varying user thresholds.}{19}{section*.43}%
+\contentsline {subsection}{\numberline {4.3}Ground Truth}{19}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Experiment Summary}{19}{subsection.4.4}%
+\contentsline {paragraph}{REES46.}{19}{section*.44}%
+\contentsline {paragraph}{UCI Online Retail.}{19}{section*.45}%
+\contentsline {subsection}{\numberline {4.5}Data Flow Diagram}{20}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Model Fitting and Evaluation Protocol}{20}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Models Fitted}{20}{subsection.5.1}%
+\contentsline {paragraph}{Our models.}{20}{section*.46}%
+\contentsline {paragraph}{Competing methods.}{20}{section*.47}%
+\contentsline {subsection}{\numberline {5.2}Evaluation Metrics}{21}{subsection.5.2}%
+\contentsline {paragraph}{Accuracy.}{21}{section*.48}%
+\contentsline {paragraph}{Calibration.}{21}{section*.49}%
+\contentsline {paragraph}{Decision impact.}{21}{section*.50}%
+\contentsline {subsection}{\numberline {5.3}Connection to Reviewer Concerns}{21}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Case Studies: Prediction Trajectories vs.\ Truth}{21}{subsection.5.4}%
+\contentsline {paragraph}{Practical interpretation.}{22}{section*.54}%
+\contentsline {subsection}{\numberline {5.5}ASOS Results: Accuracy Stratified by Extrapolation Ratio}{23}{subsection.5.5}%
+\contentsline {paragraph}{Implications for the paper.}{26}{section*.59}%
+\contentsline {subsection}{\numberline {5.6}Cross-Dataset Accuracy Summary}{26}{subsection.5.6}%
+\contentsline {paragraph}{Note on REES46 rolling results.}{27}{section*.61}%
+\contentsline {subsection}{\numberline {5.7}Credible Interval Coverage Analysis}{29}{subsection.5.7}%
+\contentsline {paragraph}{Summary.}{29}{section*.65}%
+\contentsline {paragraph}{Mechanism.}{30}{section*.67}%
+\contentsline {paragraph}{Interpretation.}{31}{section*.70}%
+\contentsline {paragraph}{Implications for the paper.}{31}{section*.71}%
+\contentsline {section}{\numberline {A}Full Reviewer Reports}{32}{appendix.A}%
+\contentsline {subsection}{\numberline {A.1}Editor Decision Letter (Po-Ling Loh)}{32}{subsection.A.1}%
+\contentsline {subsection}{\numberline {A.2}Associate Editor Report}{33}{subsection.A.2}%
+\contentsline {subsection}{\numberline {A.3}Reviewer\nobreakspace {}1 Report}{33}{subsection.A.3}%
+\contentsline {subsection}{\numberline {A.4}Reviewer\nobreakspace {}2 Report}{35}{subsection.A.4}%

@@ -234,3 +234,8 @@ output/
 data/raw/**/*.npy
 data/raw/**/*.csv
 data/raw/**/*.csv.gz
+
+# Internal revision materials (not for public repo)
+lom_revision/tracker/
+lom_revision/*.md
+lom_revision/latex/content/appendix_reviews.tex

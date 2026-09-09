@@ -1,127 +1,115 @@
-# Online Activity Prediction via Generalized Indian Buffet Process Models
+# Activity Prediction: AoAS code
 
-Code companion for predicting future users' online activity using Bayesian nonparametric models based on generalized Indian buffet processes.
+This directory contains the fitting, evaluation, and figure code for the
+non-proprietary experiments in the AoAS paper. Small prepared inputs for ASOS,
+UCI, and REES46 are included; raw data, fitted results, generated figures,
+notebooks, and the separate proprietary experiment are not. Dataset runners
+use the bundled inputs by default and every path can be overridden on the
+command line.
 
-## Paper
+The Python import package is `activity_prediction`. Its model classes use the
+paper names: `BeSSP`, `TGSSP`, `NBSSP`, `IBP`, `BetaBinomial`, and
+`HierarchicalBetaGeometric`.
 
-> Beraha, M., Masoero, L., Favaro, S., and Richardson, T. S. (2025).
-> "Online activity prediction via generalized Indian buffet process models."
-> [arXiv:2505.19643](https://arxiv.org/abs/2505.19643).
-> *Annals of Applied Statistics* (under review).
+## Requirements
 
-## Installation
+- Python 3.10 or newer.
+- The core dependencies installed from `pyproject.toml`: NumPy, SciPy, and
+  Matplotlib.
+- Julia and the environment in `julia/Project.toml` only for the model- and
+  interval-comparison simulations.
+- Optional: CmdStanPy, ArviZ, and a CmdStan installation for HBG; CVXOPT for
+  the LP/UnseenEST benchmark; pytest for the test suite.
 
-```bash
-git clone https://github.com/lorenzomasoero/OnlineActivityPredictionIBP.git
-cd OnlineActivityPredictionIBP
-pip install -r requirements.txt
-```
-
-**Optional dependencies** (uncomment in `requirements.txt` if needed):
-- `cmdstanpy`, `arviz` — for the beta-geometric model
-- `cvxopt` — for the unseen species LP estimator
-- `jupyter` — for running notebooks
-
-## Quick Start
-
-**Load pre-fitted results and inspect:**
-
-```python
-import numpy as np
-results = np.load('results/uci/uci_all_results.npy', allow_pickle=True).item()
-exp = results[6]
-print(f"NB-SSP accuracy: {exp['NB_SSP_regression']['accuracy_v']:.3f}")
-```
-
-**Fit TG-SSP on a single experiment:**
-
-```python
-from models.tg_ssp import GD
-gd = GD()
-params = gd.regression(counts_short, num_its=5, norm=2, status=False)
-prediction = gd.mean(D0=7, M=21, K=N_pilot, parameters=params)
-```
-
-**Generate the decision figure:**
+From this directory, install the core package with:
 
 ```bash
-python plotting/decision_figure.py
+python -m pip install -e .
 ```
 
-## Repository Structure
-
-```
-OnlineActivityPredictionIBP/
-├── models/              # BNP model implementations
-│   ├── tg_ssp.py       # TG-SSP (GD class)
-│   ├── nb_ssp.py       # NB-SSP (NegBintSBSP class)
-│   ├── ibp.py          # IBP
-│   └── ...             # Competitors (BB, Jackknife, Good-Toulmin)
-├── experiments/         # Fitting and evaluation scripts
-│   ├── preprocessing/   # Data preprocessing
-│   ├── fitting/         # Model fitting (UCI, REES46, ASOS)
-│   └── evaluation/      # D_M computation, hitting-time MAE
-├── plotting/            # Figure generation scripts
-├── notebooks/           # Jupyter notebooks for exploration
-├── data/                # Preprocessed data + download instructions
-│   ├── preprocessed/    # Small .npy files (committed)
-│   └── raw/             # Raw data (gitignored, user downloads)
-├── results/             # Pre-fitted results (committed)
-└── output/              # Generated figures
-```
-
-## Datasets
-
-This repository uses three datasets:
-
-- **UCI Online Retail II** — Transaction records from a UK online retailer (2009–2011). 13 experiment windows with D0=7 pilot days and D1=21 follow-up days.
-- **REES46** — eCommerce behavior data from a multi-category store (Oct 2019 – Apr 2020). Rolling-window experiments with k=21, 50, 100 day horizons.
-- **ASOS** — Treatment arm first-trigger counts from an A/B test.
-
-Preprocessed data is included in `data/preprocessed/`. For raw data download instructions, see [`data/README.md`](data/README.md).
-
-## Reproducing Paper Figures
-
-All figures can be reproduced from the committed results without re-fitting:
+Install optional Python dependencies as needed:
 
 ```bash
-# Case study trajectories (UCI, REES46, ASOS)
-python plotting/case_studies.py
-
-# Hitting-time decision figure
-python plotting/decision_figure.py
-
-# Cross-dataset comparison
-python plotting/cross_dataset.py
-
-# Power-law visualizations
-python plotting/powerlaw_viz.py
-
-# CI coverage analysis
-python plotting/ci_coverage.py
-
-# Accuracy figures
-python plotting/accuracy_figures.py
+python -m pip install -e '.[hbg,unseen,test]'
 ```
 
-Figures are saved to `output/`.
-
-To re-fit models from scratch (requires downloading raw data first):
+Prepare the Julia environment once before using its two wrappers:
 
 ```bash
-# Preprocess
-python experiments/preprocessing/preprocess_uci.py
-python experiments/preprocessing/preprocess_rees46_rolling.py
+julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+```
 
-# Fit
-python experiments/fitting/fit_uci.py
-python experiments/fitting/fit_rees46.py
-python experiments/fitting/fit_asos.py
+## Repository structure
 
-# Evaluate
-python experiments/evaluation/hitting_time_mae.py
+```text
+AoAS_Code/
+├── src/activity_prediction/   models, experiment helpers, and plotting
+├── scripts/                   one Python entry point per experiment
+├── data/                      prepared ASOS, UCI, and REES46 inputs
+├── julia/                     Julia kernels called by Python wrappers
+├── tests/                     focused model and evaluation tests
+└── pyproject.toml             package metadata and dependencies
+```
+
+## Experiment scripts
+
+Each script performs the experiment and writes both its raw result file(s) and
+paper PDF(s). Run `python scripts/<name>.py --help` for its input schema and
+configuration flags.
+
+| Script | Experiment and paper output |
+|---|---|
+| `run_parameter_sensitivity.py` | Parameter sensitivity; `u_simu.pdf`. |
+| `run_inversion.py` | Duration-band inversion illustration; `inversion_ci.pdf`. |
+| `run_model_comparison.py` | Be-SSP versus TG-SSP simulation; calls Julia and writes `comparison_accuracy.pdf`. |
+| `run_interval_comparison.py` | Posterior versus inversion intervals; calls Julia and writes `interval_comparison_length.pdf`. |
+| `run_zipf.py` | Zipf-Poisson prediction study; `PAPER_zipf_accuracy.pdf` and `PAPER_zipf_sums.pdf`. |
+| `run_parameter_estimation.py` | NB-SSP likelihood-versus-curve study; `PAPER_model_accuracy_sample_size.pdf` and `APPENDIX_log_like.pdf`. |
+| `run_nb_prediction.py` | NB-SSP future-trigger illustration; `PAPER_prediction_sum_synthetic.pdf`. |
+| `run_asos.py` | ASOS first-trigger fits; `PAPER_ASOS_accuracy_v2.pdf` and `fig_appendix_asos_selected.pdf`. |
+| `run_uci.py` | UCI fits and trajectories; `fig_case_study_uci.pdf` and `fig_appendix_uci_accumulation.pdf`. |
+| `run_rees46.py` | REES46 fits; three `fig_rees46_*.pdf` descriptives and `fig_appendix_rees46_accumulation.pdf`. |
+| `run_hitting_times.py` | ASOS/REES46 duration-to-target analysis; `fig_hitting_time_mae_asos.pdf`. |
+
+The data runners consume the prepared files under `data/`; their formats and
+sources are summarized in [`data/README.md`](data/README.md). With the package
+installed, the main dataset experiments can therefore be launched directly:
+
+```bash
+python scripts/run_asos.py
+python scripts/run_uci.py
+python scripts/run_rees46.py
+```
+
+The hitting-time experiment consumes fitted ASOS results and a REES46 fit over
+the bundled rolling `k=100` windows. Produce those prerequisites, then run it:
+
+```bash
+python scripts/run_asos.py
+python scripts/run_rees46.py \
+  --experiments data/rees46/experiments_rolling_k100.npy \
+  --output-dir output/rees46_k100
+python scripts/run_hitting_times.py
+```
+
+All generated `.npy` results and PDFs go below `output/` by default. Use
+`python scripts/<name>.py --help` to override inputs, output directories, or
+experiment settings.
+
+The Julia wrappers default to the bundled entry points and accept `--julia`
+when the executable is not named `julia`. The Python synthetic runners expose
+seed and simulation-size controls; their defaults follow the paper settings.
+Where an executable historical driver was absent, the script documents its
+paper-based reconstruction and records the relevant numerical assumptions in
+the raw output.
+
+## Tests
+
+```bash
+python -m pytest
 ```
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+See [`LICENSE`](LICENSE) for the combined notices retained from the public
+source trees.

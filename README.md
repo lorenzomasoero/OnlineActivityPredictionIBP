@@ -1,115 +1,91 @@
-# Activity Prediction: AoAS code
+# Online activity prediction via generalized Indian buffet process models — code companion
 
-This directory contains the fitting, evaluation, and figure code for the
-non-proprietary experiments in the AoAS paper. Small prepared inputs for ASOS,
-UCI, and REES46 are included; raw data, fitted results, generated figures,
-notebooks, and the separate proprietary experiment are not. Dataset runners
-use the bundled inputs by default and every path can be overridden on the
-command line.
+Reproduction code for the paper *"Online activity prediction via generalized Indian
+buffet process models"* (Beraha, Favaro, Masoero; Annals of Applied Statistics).
 
-The Python import package is `activity_prediction`. Its model classes use the
-paper names: `BeSSP`, `TGSSP`, `NBSSP`, `IBP`, `BetaBinomial`, and
-`HierarchicalBetaGeometric`.
+The package fits and evaluates the paper's models — Be-SSP, TG-SSP, NB-SSP, the
+three-parameter Indian buffet process (IBP), beta-binomial (BB), and hierarchical
+beta-geometric (HBG) — on the public UCI, REES46, and ASOS datasets, and regenerates
+the paper's tables and figures. Small prepared inputs are bundled; raw data is
+downloaded/preprocessed, and the separate proprietary experiment is provided
+results-only (see Data availability).
 
-## Requirements
+## What reproduces what
 
-- Python 3.10 or newer.
-- The core dependencies installed from `pyproject.toml`: NumPy, SciPy, and
-  Matplotlib.
-- Julia and the environment in `julia/Project.toml` only for the model- and
-  interval-comparison simulations.
-- Optional: CmdStanPy, ArviZ, and a CmdStan installation for HBG; CVXOPT for
-  the LP/UnseenEST benchmark; pytest for the test suite.
+Every reported number comes from a committed CSV; every figure from a committed
+script. The paper's cross-dataset accuracy numbers are produced by the **fitting
+engine** in `paper_fitting/`; the simulation figures by the **simulation runners** in
+`scripts/`.
 
-From this directory, install the core package with:
+| Paper artifact | How to regenerate | Output |
+|---|---|---|
+| Table `tab:cross_accuracy` (UCI/REES46/ASOS accuracy) | `make fit && make csv` | `paper_fitting/values/cross_dataset_accuracy.csv` |
+| Data-experiment accuracy figures | `make figures-data` | `paper_fitting/out/accuracy_*.pdf` |
+| Table `tab:ht_main` (hitting-time MAE) | `python scripts/run_hitting_times.py` | `results/hitting_time_mae_{asos,k100}.csv` |
+| Appendix REES46 rolling-window counts (186/157/107) | `python reproducibility/gen_rees46_experiment_counts.py` | `results/rees46_experiment_counts.csv` |
+| Appendix TG-SSP bimodality (REES46 28-day) | `bash paper_fitting/bimodality_sweep.sh` then `python paper_fitting/bimodality_report.py` | `paper_fitting/bimodality_tg.csv`, `paper_fitting/out/bimodality_hist.pdf` |
+| Simulation figures (DG1/DG2, zipf, NB prediction, parameter est./sens., inversion) | `make figures-sim` | PDFs under `output/` |
+| Trajectory / dataset-descriptive figures | `python scripts/run_uci.py`, `run_rees46.py` | PDFs under `output/` |
+| Proprietary experiment (code path on synthetic mock) | `make proprietary` | mock results; real numbers in `data/proprietary/proprietary_results_summary.csv` |
 
-```bash
-python -m pip install -e .
-```
-
-Install optional Python dependencies as needed:
-
-```bash
-python -m pip install -e '.[hbg,unseen,test]'
-```
-
-Prepare the Julia environment once before using its two wrappers:
+Quick end-to-end (paper numbers + data-experiment figures, seed 0):
 
 ```bash
-julia --project=julia -e 'using Pkg; Pkg.instantiate()'
+make repro
 ```
 
-## Repository structure
+## Requirements & install
+
+- **Python 3.11** (requires >= 3.10; some systems default to 3.9).
+- Core: NumPy, SciPy, Matplotlib (from `pyproject.toml`).
+- Optional: Julia (`julia/Project.toml`) for the model-/interval-comparison
+  simulations; CmdStanPy + ArviZ for HBG; CVXOPT for the LP/UnseenEST benchmark.
+
+```bash
+python3.11 -m venv .venv && source .venv/bin/activate
+pip install -e .            # add '.[hbg,unseen,test]' for optional pieces
+julia --project=julia -e 'using Pkg; Pkg.instantiate()'   # only for the two Julia figures
+make test                   # 14 tests
+```
+
+See `REPRODUCE.md` for the step-by-step guide and `REPRODUCIBILITY.md` for the
+provenance standard.
+
+## Layout & the two model implementations
 
 ```text
-AoAS_Code/
-├── src/activity_prediction/   models, experiment helpers, and plotting
-├── scripts/                   one Python entry point per experiment
-├── data/                      prepared ASOS, UCI, and REES46 inputs
-├── julia/                     Julia kernels called by Python wrappers
-├── tests/                     focused model and evaluation tests
-└── pyproject.toml             package metadata and dependencies
+paper_fitting/     fitting engine of record — reproduces the paper's accuracy numbers
+                   (fit_*.py + utils/); export_paper_csv.py, make_figures.py
+src/activity_prediction/   models, evaluation helpers, and plotting (used for the
+                   simulation figures and all plotting)
+scripts/           one runner per experiment (simulations + dataset descriptives)
+preprocessing/     raw -> prepared inputs + dataset-characteristics stats
+reproducibility/   CSV/count generators consumed by the paper
+data/              prepared public inputs (see data/README.md); data/proprietary/ (mock + aggregates)
+julia/  tests/  Makefile  pyproject.toml
 ```
 
-## Experiment scripts
+Note: the paper's **cross-dataset accuracy** (Table `tab:cross_accuracy`) is produced
+by `paper_fitting/` (the implementation used for the published results). The
+`src/activity_prediction` model classes are an independent implementation used for the
+plotting and simulation studies; they are not the source of the accuracy table.
 
-Each script performs the experiment and writes both its raw result file(s) and
-paper PDF(s). Run `python scripts/<name>.py --help` for its input schema and
-configuration flags.
+## Data availability
 
-| Script | Experiment and paper output |
-|---|---|
-| `run_parameter_sensitivity.py` | Parameter sensitivity; `u_simu.pdf`. |
-| `run_inversion.py` | Duration-band inversion illustration; `inversion_ci.pdf`. |
-| `run_model_comparison.py` | Be-SSP versus TG-SSP simulation; calls Julia and writes `comparison_accuracy.pdf`. |
-| `run_interval_comparison.py` | Posterior versus inversion intervals; calls Julia and writes `interval_comparison_length.pdf`. |
-| `run_zipf.py` | Zipf-Poisson prediction study; `PAPER_zipf_accuracy.pdf` and `PAPER_zipf_sums.pdf`. |
-| `run_parameter_estimation.py` | NB-SSP likelihood-versus-curve study; `PAPER_model_accuracy_sample_size.pdf` and `APPENDIX_log_like.pdf`. |
-| `run_nb_prediction.py` | NB-SSP future-trigger illustration; `PAPER_prediction_sum_synthetic.pdf`. |
-| `run_asos.py` | ASOS first-trigger fits; `PAPER_ASOS_accuracy_v2.pdf` and `fig_appendix_asos_selected.pdf`. |
-| `run_uci.py` | UCI fits and trajectories; `fig_case_study_uci.pdf` and `fig_appendix_uci_accumulation.pdf`. |
-| `run_rees46.py` | REES46 fits; three `fig_rees46_*.pdf` descriptives and `fig_appendix_rees46_accumulation.pdf`. |
-| `run_hitting_times.py` | ASOS/REES46 duration-to-target analysis; `fig_hitting_time_mae_asos.pdf`. |
+- **Public** (UCI, REES46, ASOS): small prepared inputs are bundled under `data/`;
+  raw downloads and preprocessing are documented in `data/README.md` and `preprocessing/`.
+- **Proprietary** (1,774-experiment dataset): **cannot be released**; the experiment is
+  **not reproducible end-to-end** (known limitation). We ship only the privacy-safe
+  aggregate results (`data/proprietary/proprietary_results_summary.csv`) and a synthetic
+  mock so `make proprietary` exercises the code path — its numbers are not the paper's.
 
-The data runners consume the prepared files under `data/`; their formats and
-sources are summarized in [`data/README.md`](data/README.md). With the package
-installed, the main dataset experiments can therefore be launched directly:
+## Reproducibility notes
 
-```bash
-python scripts/run_asos.py
-python scripts/run_uci.py
-python scripts/run_rees46.py
-```
-
-The hitting-time experiment consumes fitted ASOS results and a REES46 fit over
-the bundled rolling `k=100` windows. Produce those prerequisites, then run it:
-
-```bash
-python scripts/run_asos.py
-python scripts/run_rees46.py \
-  --experiments data/rees46/experiments_rolling_k100.npy \
-  --output-dir output/rees46_k100
-python scripts/run_hitting_times.py
-```
-
-All generated `.npy` results and PDFs go below `output/` by default. Use
-`python scripts/<name>.py --help` to override inputs, output directories, or
-experiment settings.
-
-The Julia wrappers default to the bundled entry points and accept `--julia`
-when the executable is not named `julia`. The Python synthetic runners expose
-seed and simulation-size controls; their defaults follow the paper settings.
-Where an executable historical driver was absent, the script documents its
-paper-based reconstruction and records the relevant numerical assumptions in
-the raw output.
-
-## Tests
-
-```bash
-python -m pytest
-```
+- Fits use random restarts; pass `--seed` (or `SEED=`) for determinism. `make repro`
+  uses seed 0. On the small REES46 28-day benchmark, TG-SSP accuracy is bimodal across
+  seeds — the paper reports the typical (low) mode; see the bimodality appendix.
+- Numbers are rounded in LaTeX, not in the CSVs.
 
 ## License
 
-See [`LICENSE`](LICENSE) for the combined notices retained from the public
-source trees.
+See `LICENSE`.
